@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ITransaction } from '../models';
 import { apiKey, baseUrl, PAGE_LIMIT } from "../utils/constants";
 
@@ -12,14 +12,7 @@ export function useTransactions(page: number | null) {
   const [error, setError] = useState<string | null>(null)
   const [hasMore, setHasMore] = useState(true)
 
-  useEffect(() => {
-    if (address && address.length > 0) {
-      fetchData()
-    }
-    // eslint-disable-next-line
-  }, [page, address])
-
-  async function fetchData() {
+  const fetchData = useCallback(async () => {
     if (address && address?.length > 1) {
       try {
         setError('')
@@ -28,7 +21,7 @@ export function useTransactions(page: number | null) {
         const data = await response.json();
         if (data.status === "1") {
           const res = [...transactions].concat(data.result)
-          if (data.length + PAGE_LIMIT >= 10000) {
+          if (res.length + PAGE_LIMIT >= 150) {
             setHasMore(false)
           }
           setTransactions(res)
@@ -47,7 +40,14 @@ export function useTransactions(page: number | null) {
 
     }
 
-  }
+    // eslint-disable-next-line
+  },[address,page])
+
+  useEffect(() => {
+      fetchData()
+  }, [fetchData])
+
+  
   const changeAdress = (value: string) => {
     setAddress(value)
     setTransactions([])

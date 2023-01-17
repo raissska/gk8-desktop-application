@@ -13,9 +13,9 @@ export const Body = () => {
     <tbody className="table-body">
       {transactions.map((item, index) => {
         return (
-          <tr className="body">
+          <tr key={item.timeStamp} className="body">
             <td className="cell"> {index + 1}</td>
-            { columns.map(row => <td>{item[row.accessor]}</td>)}
+            { columns.map(row => <td key={item.timeStamp+row.accessor}>{item[row.accessor]}</td>)}
           </tr>
         )
       })}
